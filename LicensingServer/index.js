@@ -65,7 +65,11 @@ async function validateID(req, res) {
         res.end(JSON.stringify({error: "Expired License"}));
         return;
     }
-    if (activeLicences[params.get("license")].host != params.get("host"))
+    if (activeLicences[params.get("license")].host != params.get("host")) {
+        res.statusCode = 403;
+        res.end(JSON.stringify({error: "License for incorrect product"}));
+        return;
+    }
     res.statusCode = 200;
     res.end(JSON.stringify({status: "License valid"}));
     delete activeLicences[params.get("license")];
