@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Mercury Workshop",
   "license": "UNLICENSED",
   "dependencies": {
     "dotenv": "^16.3.1"
