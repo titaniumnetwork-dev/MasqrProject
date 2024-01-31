@@ -20,7 +20,7 @@ app.use(async (req, res, next) => {
         // Bypass for UV and other bares
     }
     if (req.cookies["authcheck"]) {
-        const pass = req.cookies.authToken;
+        const pass = req.cookies.authcheck;
         const licenseCheck = (await (await fetch(LICENSE_SERVER_URL + pass + "&host=" + req.headers.host)).json())["status"]
         console.log(LICENSE_SERVER_URL + pass + "&host=" + req.headers.host +" returned " +licenseCheck)
         if (licenseCheck == "License valid") {
