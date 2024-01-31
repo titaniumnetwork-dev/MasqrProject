@@ -31,7 +31,7 @@ app.use(async (req, res, next) => {
             res.setHeader('WWW-Authenticate', 'Basic');
             err.status = 401;
             res.setHeader("Content-Type", "text/html"); 
-            res.send(401, failureFile)
+            return res.status(401).send(failureFile);
         }
     }
 
@@ -50,7 +50,7 @@ app.use(async (req, res, next) => {
         res.setHeader('WWW-Authenticate', 'Basic');
         err.status = 401;
         res.setHeader("Content-Type", "text/html"); 
-        res.send(401, failureFile)
+        res.status(401).send(failureFile)
         return;
     }
  
