@@ -24,7 +24,6 @@ app.use(async (req, res, next) => {
         const licenseCheck = (await (await fetch(LICENSE_SERVER_URL + pass + "&host=" + req.headers.host)).json())["status"]
         console.log(LICENSE_SERVER_URL + pass + "&host=" + req.headers.host +" returned " +licenseCheck)
         if (licenseCheck == "License valid") {
-            res.cookie("authcheck", "true") // authorize session
             next();
             return;
         } else {
