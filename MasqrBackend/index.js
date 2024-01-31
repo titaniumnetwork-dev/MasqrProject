@@ -20,8 +20,20 @@ app.use(async (req, res, next) => {
         // Bypass for UV and other bares
     }
     if (req.cookies["authcheck"]) {
-        next();
-        return;
+        const pass = req.cookies.authToken;
+        const licenseCheck = (await (await fetch(LICENSE_SERVER_URL + pass + "&host=" + req.headers.host)).json())["status"]
+        console.log(LICENSE_SERVER_URL + pass + "&host=" + req.headers.host +" returned " +licenseCheck)
+        if (licenseCheck == "License valid") {
+            res.cookie("authcheck", "true") // authorize session
+            next();
+            return;
+        } else {
+            let err = new Error('You are not authenticated!');
+            res.setHeader('WWW-Authenticate', 'Basic');
+            err.status = 401;
+            res.setHeader("Content-Type", "text/html"); 
+            res.send(401, failureFile)
+        }
     }
 
     const authheader = req.headers.authorization;
@@ -51,7 +63,7 @@ app.use(async (req, res, next) => {
     const licenseCheck = (await (await fetch(LICENSE_SERVER_URL + pass + "&host=" + req.headers.host)).json())["status"]
     console.log(LICENSE_SERVER_URL + pass + "&host=" + req.headers.host +" returned " +licenseCheck)
     if (licenseCheck == "License valid") {
-        res.cookie("authcheck", "true") // authorize session
+        res.cookie("authcheck", pass) // authorize session
         next();
         return;
     }
