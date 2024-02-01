@@ -8,7 +8,7 @@ configDotenv();
  */
 const keys = JSON.parse(process.env.PSK);
 
-const activeLicences = {};
+const activeLicences = new Map();;
 
 /**
  * @description Route for /newLicense which handles ID generation
@@ -23,13 +23,13 @@ async function genID(req, res) {
     // Define default variables and throw errors for no hostname
     const assignedKey = params.get("assignedLicense") || crypto.randomUUID().substring(0,6);
     const proxyHost = params.get("host")
-    const expireTime = params.get("expires") || (Date.now() * 2 * 60 * 60 * 1000);
+    const expireTime = params.get("expires") || Date.now() + (3 * 24 * 60 * 60 * 1000);
     if (!proxyHost)
         return throwError(res, "No host defined in URL")
     
 
     // License assignment
-    activeLicences[assignedKey] = {host: proxyHost, expires: expireTime};
+    activeLicences.set(assignedKey, {host: proxyHost, expires: expireTime});
 
     // Success
     res.statusCode = 200;
@@ -40,9 +40,9 @@ async function genID(req, res) {
  * @description House keeping task to clean up licenses that have been invalid for 7 or more days; this only really runs once per day
  */
 async function cleanupLicenses() {
-    for (const license in activeLicences) {
-        if (activeLicences[license].expires < (Date.now() + (7 * 24 * 60 * 60 * 1000))) {
-            delete activeLicences[license];
+    for (const license in activeLicences.keys()) {
+        if (activeLicences.get(license).expires < (Date.now() + (7 * 24 * 60 * 60 * 1000))) {
+            activeLicences.delete(license);
         }
     } 
 }
@@ -54,25 +54,25 @@ async function cleanupLicenses() {
  */
 async function validateID(req, res) {
     const params = new URL(req.url, "http://localhost/").searchParams;
-    if (!activeLicences[params.get("license")]) {
+    if (!activeLicences.get(params.get("license"))) {
         res.statusCode = 403;
         res.end(JSON.stringify({error: "Invalid License"}));
         return;
     }
-    if (activeLicences[params.get("license")].expires < Date.now()) {
+    if (activeLicences.get(params.get("license")).expires < Date.now()) {
         delete activeLicences[params.get("license")];
         res.statusCode = 403;
         res.end(JSON.stringify({error: "Expired License"}));
         return;
     }
-    if (activeLicences[params.get("license")].host != params.get("host")) {
+    if (activeLicences.get(params.get("license")).host != params.get("host")) {
         res.statusCode = 403;
         res.end(JSON.stringify({error: "License for incorrect product"}));
         return;
     }
     res.statusCode = 200;
     res.end(JSON.stringify({status: "License valid"}));
-    delete activeLicences[params.get("license")];
+    activeLicences.delete(params.get("license"));
 }
 
 /**
@@ -98,7 +98,7 @@ http.createServer(function (req, res) {
     res.statusCode = 404
     res.end(JSON.stringify({error: "Invalid route"}))
 
-}).listen(8080);
+}).listen(8004);
 
 // Run cleanupLicenses once per day to prevent a memory leak
 setInterval(cleanupLicenses, 24 * 60 * 60 * 1000);
