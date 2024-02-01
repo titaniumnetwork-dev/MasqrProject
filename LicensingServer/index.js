@@ -8,7 +8,7 @@ configDotenv();
  */
 const keys = JSON.parse(process.env.PSK);
 
-const activeLicences = new Map();;
+const activeLicences = new Map();
 
 /**
  * @description Route for /newLicense which handles ID generation
