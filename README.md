@@ -1,6 +1,6 @@
 # The MASQR project
 
-This repository contains the backend for Masqr, and two example clients, using Express middleware and just browser side JS.
+This repository contains the backend for Masqr and the express middleware.
 
 ## What is MASQR?
 
@@ -8,7 +8,27 @@ Think of Masqr as a "anti link leaking" authentication system that allows you to
 
 ## How can deploy this?
 
-This is fairly easy to deploy to your backend using `express` as seen in the `MasqrBackend` example, and you can implement this into different backends fairly similarly.
+This is fairly easy to deploy to your backend using `express` as seen below, and you can implement this into different backends fairly similarly.
+
+```js
+import express from "express";
+import masqr from "@mercuryworkshop/masqrbackend";
+
+const app = express();
+
+app.use(masqr({
+	fail(req, res) {
+		res.end("fail!!!");
+	},
+	licenseServerUrl: "https://license.mercurywork.shop"
+}));
+
+app.use((req, res) => {
+	res.end("proxy");
+});
+
+app.listen(8080);
+```
 
 ## How it works
 
