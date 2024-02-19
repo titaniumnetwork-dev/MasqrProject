@@ -1,16 +1,24 @@
 {
-  "name": "masqerbackend",
+  "name": "@mercuryworkshop/masqrbackend",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
-  "main": "index.js",
+  "description": "Masqr Project - Backend validator",
+  "main": "dist/index.js",
+  "files": ["dist", "../LICENSE"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -d",
+	"test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mercury Workshop",
-  "license": "UNLICENSED",
+  "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
+    "cookie": "^0.6.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/cookie": "^0.6.0",
+    "@types/node": "^20.11.17",
+    "typescript": "^5.3.3"
   }
 }
